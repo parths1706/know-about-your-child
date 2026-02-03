@@ -1,0 +1,198 @@
+/* =========================
+   1. PAGE & ROOT BACKGROUND
+   ========================= */
+
+body {
+    background-color: #f8fafc;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Root app container */
+div[data-testid="stAppViewContainer"] {
+    background-color: #f8fafc;
+}
+
+/* =========================
+   2. STREAMLIT LAYOUT RESET
+   ========================= */
+
+/* Remove default white blocks */
+div[data-testid="stVerticalBlock"] > div {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* Remove empty layout blocks */
+div[data-testid="stVerticalBlock"]:empty {
+    display: none !important;
+}
+
+/* Control global padding */
+.block-container {
+    padding-top: 2rem !important;
+    padding-bottom: 3rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 800px !important;
+}
+
+/* =========================
+   3. APP HEADER / NAV BAR
+   ========================= */
+
+.app-header {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    padding: 2.5rem 2rem;
+    border-radius: 24px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
+    text-align: center;
+}
+
+.app-header-inner {
+    margin: auto;
+}
+
+.app-header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 0.6rem;
+    letter-spacing: -0.025em;
+}
+
+.app-header p {
+    font-size: 1.1rem;
+    color: #e0e7ff;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* =========================
+   4. MAIN CONTENT CARD
+   ========================= */
+
+/* Unified card style for containers */
+div[data-testid="stVerticalBlock"] > div:has(div.stMarkdown > div.card-header) {
+    background: #ffffff !important;
+    padding: 2rem !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid #f1f5f9 !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.card-header h3 {
+    margin: 0 !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+}
+
+/* =========================
+   5. TEXT & QUESTIONS
+   ========================= */
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+}
+
+.question {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.qa-block {
+    background: #f8fafc;
+    padding: 1.25rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #f1f5f9;
+}
+
+/* =========================
+   6. INPUTS & BUTTONS
+   ========================= */
+
+/* Improve Streamlit widget appearance */
+.stSelectbox, .stSlider, .stRadio, .stTextArea {
+    margin-bottom: 1rem !important;
+}
+
+div[data-testid="stTextArea"] textarea {
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 0.75rem !important;
+    transition: all 0.2s !important;
+}
+
+div[data-testid="stTextArea"] textarea:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Buttons */
+div.stButton > button {
+    width: 100% !important;
+    border-radius: 12px !important;
+    padding: 0.6rem 1.5rem !important;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
+}
+
+div.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+    border: none !important;
+    color: white !important;
+}
+
+div.stButton > button[kind="primary"]:hover {
+    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* =========================
+   7. RESPONSIVE
+   ========================= */
+
+@media (max-width: 640px) {
+    .block-container {
+        padding-top: 1rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    .app-header {
+        padding: 1.5rem 1rem;
+        border-radius: 16px;
+    }
+
+    .app-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .app-header p {
+        font-size: 0.95rem;
+    }
+
+    div[data-testid="stVerticalBlock"] > div:has(div.stMarkdown > div.card-header) {
+        padding: 1.25rem !important;
+    }
+}
+
