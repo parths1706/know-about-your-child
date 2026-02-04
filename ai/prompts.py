@@ -1,21 +1,33 @@
 def question_prompt(region, age, gender):
     return f"""
-You are a child psychology expert.
+You are a world-class child psychology expert. Based on the child's details, generate 5-7 highly relevant, insightful questions to help understand the child better.
 
-Child details:
+Child Details:
 - Region: {region}
 - Age: {age}
 - Gender: {gender}
 
-Generate 5–7 thoughtful questions for parents to understand:
-- behavior
-- emotions
-- health
-- social interaction
-- daily habits
+Your goal is to uncover insights about their:
+- Emotional well-being
+- Social development
+- Daily habits and routine
+- Strengths and challenges
 
-Questions must be age-appropriate and culturally relevant.
-Return ONLY a numbered list.
+OUTPUT REQUIREMENT:
+You must return ONLY a JSON array of objects. Each object must have:
+- "question": The question text (empathy-driven and supportive)
+- "type": One of ["yes_no", "options", "scale"]
+- "options": (Only if type is "options") A list of 3-4 possible answers.
+
+Note: DO NOT use "text" type questions. User wants selective answers only (Yes/No, Multiple Choice, or Range/Scale).
+
+Example Format:
+[
+  {{"question": "How often does your child express curiosity about new things?", "type": "scale"}},
+  {{"question": "Does your child prefer playing alone or with others?", "type": "options", "options": ["Mostly alone", "Mostly with others", "A mix of both"]}}
+]
+
+Return ONLY the JSON array. Do not include any other text.
 """
 
 

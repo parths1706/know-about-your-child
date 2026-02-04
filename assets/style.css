@@ -2,197 +2,210 @@
    1. PAGE & ROOT BACKGROUND
    ========================= */
 
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+
 body {
-    background-color: #f8fafc;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f8f7ff;
+    font-family: 'Fredoka', sans-serif;
 }
 
-/* Root app container */
 div[data-testid="stAppViewContainer"] {
-    background-color: #f8fafc;
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%) !important;
+    background-attachment: fixed !important;
 }
 
-/* =========================
-   2. STREAMLIT LAYOUT RESET
-   ========================= */
-
-/* Remove default white blocks */
-div[data-testid="stVerticalBlock"] > div {
+div[data-testid="stHeader"] {
     background: transparent !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-}
-
-/* Remove empty layout blocks */
-div[data-testid="stVerticalBlock"]:empty {
-    display: none !important;
-}
-
-/* Control global padding */
-.block-container {
-    padding-top: 2rem !important;
-    padding-bottom: 3rem !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    max-width: 800px !important;
 }
 
 /* =========================
-   3. APP HEADER / NAV BAR
+   2. MAIN CONTAINER
    ========================= */
 
-.app-header {
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-    padding: 2.5rem 2rem;
-    border-radius: 24px;
-    margin-bottom: 2rem;
-    box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
-    text-align: center;
-}
-
-.app-header-inner {
+.block-container {
+    max-width: 1000px !important;
+    width: 95% !important;
+    padding-top: 2rem !important;
+    padding-bottom: 4rem !important;
     margin: auto;
 }
 
+/* =========================
+   3. APP HEADER
+   ========================= */
+
+.app-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 2rem;
+    padding: 1.5rem 1rem;
+    animation: fadeInDown 0.8s ease-out;
+}
+
 .app-header h1 {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: #ffffff;
-    margin-bottom: 0.6rem;
-    letter-spacing: -0.025em;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+    text-shadow: 0 8px 16px rgba(0,0,0,0.15);
 }
 
 .app-header p {
-    font-size: 1.1rem;
-    color: #e0e7ff;
-    margin: 0;
-    opacity: 0.9;
+    font-size: 1.25rem;
+    opacity: 0.95;
+    margin-top: 0.5rem;
+    font-weight: 400;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* =========================
-   4. MAIN CONTENT CARD
+   4. THE UNIFIED CARD
    ========================= */
 
-/* Unified card style for containers */
-div[data-testid="stVerticalBlock"] > div:has(div.stMarkdown > div.card-header) {
-    background: #ffffff !important;
-    padding: 2rem !important;
-    border-radius: 20px !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    border: 1px solid #f1f5f9 !important;
-    margin-bottom: 1.5rem !important;
+/* The main content container should be the ONLY card */
+div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stVerticalBlock"]) {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 40px !important;
+    padding: clamp(1.5rem, 5vw, 4rem) !important;
+    box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f1f5f9;
+/* Kill all fragmented white blocks */
+div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] > div {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
 }
 
-.card-header h3 {
-    margin: 0 !important;
-    font-size: 1.25rem !important;
-    font-weight: 700 !important;
-    color: #1e293b !important;
+/* CRITICAL: Fix the "white block" gap in radio buttons */
+div[data-testid="stRadio"] > label {
+    display: none !important;
+}
+
+div[data-testid="stRadio"] div[role="radiogroup"] {
+    margin-top: -10px !important; /* Pull up to touch question */
+    gap: 12px !important;
 }
 
 /* =========================
-   5. TEXT & QUESTIONS
+   5. MODERN WIDGETS
    ========================= */
 
 .section-title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 1.5rem;
+    color: #4c1d95;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.progress-text {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #7c3aed;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.8rem;
+}
+
+/* Streamlit Progress Bar */
+div[data-testid="stProgress"] > div > div > div > div {
+    background-color: #7c3aed !important;
+    height: 12px !important;
+    border-radius: 6px !important;
 }
 
 .question {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #334155;
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
-}
-
-.qa-block {
-    background: #f8fafc;
-    padding: 1.25rem;
-    border-radius: 16px;
+    font-size: clamp(1.4rem, 4vw, 1.8rem);
+    font-weight: 700;
+    color: #1e1b4b;
+    line-height: 1.3;
     margin-bottom: 1.5rem;
-    border: 1px solid #f1f5f9;
 }
 
-/* =========================
-   6. INPUTS & BUTTONS
-   ========================= */
-
-/* Improve Streamlit widget appearance */
-.stSelectbox, .stSlider, .stRadio, .stTextArea {
-    margin-bottom: 1rem !important;
-}
-
-div[data-testid="stTextArea"] textarea {
-    border-radius: 12px !important;
-    border: 1px solid #e2e8f0 !important;
-    padding: 0.75rem !important;
-    transition: all 0.2s !important;
-}
-
-div[data-testid="stTextArea"] textarea:focus {
-    border-color: #6366f1 !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
-}
-
-/* Buttons */
+/* Premium Buttons */
 div.stButton > button {
     width: 100% !important;
-    border-radius: 12px !important;
-    padding: 0.6rem 1.5rem !important;
-    font-weight: 600 !important;
-    transition: all 0.2s !important;
+    border-radius: 24px !important;
+    padding: 1.2rem 2rem !important;
+    font-weight: 700 !important;
+    font-size: 1.2rem !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    border: none !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 div.stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
-    border: none !important;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
     color: white !important;
+    box-shadow: 0 15px 30px -5px rgba(124, 58, 237, 0.4) !important;
 }
 
 div.stButton > button[kind="primary"]:hover {
-    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4) !important;
-    transform: translateY(-1px) !important;
+    transform: translateY(-5px) scale(1.02) !important;
+    box-shadow: 0 25px 50px -10px rgba(124, 58, 237, 0.6) !important;
+}
+
+/* Radio chips (Modern pill style) */
+.stRadio label {
+    background: #f3f4f6;
+    padding: 1.2rem 1.8rem !important;
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    border: 2px solid transparent !important;
+    transition: all 0.3s ease !important;
+    color: #4b5563 !important;
+    font-size: 1.1rem !important;
+}
+
+.stRadio label:hover {
+    background: #ede9fe !important;
+    color: #7c3aed !important;
+}
+
+.stRadio div[data-testid="stMarkdownContainer"] p {
+    font-weight: 600 !important;
+}
+
+/* Active state for radio (Targeting Streamlit's internal selection) */
+div[data-testid="stRadio"] label[data-selected="true"] {
+    background: #7c3aed !important;
+    color: white !important;
+    border-color: #6d28d9 !important;
+    box-shadow: 0 10px 20px -5px rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Selectbox & Sliders */
+.stSelectbox div[data-baseweb="select"] {
+    border-radius: 16px !important;
+    border: 2px solid #e5e7eb !important;
+}
+
+.stSlider > div > div > div > div {
+    background-color: #7c3aed !important;
 }
 
 /* =========================
-   7. RESPONSIVE
+   6. RESPONSIVE
    ========================= */
 
 @media (max-width: 640px) {
     .block-container {
         padding-top: 1rem !important;
-        padding-left: 0.75rem !important;
-        padding-right: 0.75rem !important;
+        width: 100% !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
     }
-
-    .app-header {
-        padding: 1.5rem 1rem;
-        border-radius: 16px;
-    }
-
-    .app-header h1 {
-        font-size: 1.75rem;
-    }
-
-    .app-header p {
-        font-size: 0.95rem;
-    }
-
-    div[data-testid="stVerticalBlock"] > div:has(div.stMarkdown > div.card-header) {
-        padding: 1.25rem !important;
+    
+    div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stVerticalBlock"]) {
+        padding: 2.5rem 1.5rem !important;
+        border-radius: 30px !important;
     }
 }
-
