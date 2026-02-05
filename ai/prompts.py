@@ -68,12 +68,13 @@ OUTPUT FORMAT (STRICT)
 ====================
 Return ONLY valid JSON. No markdown. No commentary.
 
-{
+Example:
+{{
   "question": "string",
-  "type": "yesno" | "mcq" | "text",
+  "type": "yesno" or "mcq" or "text",
   "options": ["option1", "option2"] (only if type is mcq),
   "reason": "Internal reasoning for why this question is important (not shown to user)"
-}
+}}
 """
 
 def analysis_prompt(region, age, gender, history):
