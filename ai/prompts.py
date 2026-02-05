@@ -90,16 +90,17 @@ GOOD ✅:
 ====================
 OUTPUT (STRICT JSON ONLY)
 ====================
-Return ONLY valid JSON.
-No explanation. No extra text.
+Return ONLY valid JSON. 
+No explanation. No markdown. No extra text.
 
-
- "domain": "belief_system | discipline_style | emotional_response | parent_child_bond | respect_elders | independence | adaptability",
+{{
+  "domain": "belief_system | discipline_style | emotional_response | parent_child_bond | respect_elders | independence | adaptability",
   "question": "Parent-focused tap-only question",
-  "type": "yesno" | "mcq" | "range",
+  "type": "yesno" or "mcq" or "range",
   "options": ["Option A", "Option B", "Option C"],
   "scale": ["Never", "Sometimes", "Often", "Always"],
   "reason": "Internal reasoning (not shown to user)"
+}}
 """
 
 
