@@ -1,67 +1,127 @@
-def question_prompt(region, age, gender):
+def next_question_prompt(region, age, gender, history):
     return f"""
-You are a world-class child psychology expert. Based on the child's details, generate 5-7 highly relevant, insightful questions to help understand the child better.
+You are an expert child psychologist and culturally-aware parenting advisor.
 
-Child Details:
-- Region: {region}
-- Age: {age}
-- Gender: {gender}
+You are conducting an adaptive interview to understand BOTH:
+- the child's behavior & emotional development
+- the parent's mindset, expectations, and parenting style
 
-Your goal is to uncover insights about their:
-- Emotional well-being
-- Social development
-- Daily habits and routine
-- Strengths and challenges
-
-OUTPUT REQUIREMENT:
-You must return ONLY a JSON array of objects. Each object must have:
-- "question": The question text (empathy-driven and supportive)
-- "type": One of ["yes_no", "options", "scale"]
-- "options": (Only if type is "options") A list of 3-4 possible answers.
-
-Note: DO NOT use "text" type questions. User wants selective answers only (Yes/No, Multiple Choice, or Range/Scale).
-
-Example Format:
-[
-  {{"question": "How often does your child express curiosity about new things?", "type": "scale"}},
-  {{"question": "Does your child prefer playing alone or with others?", "type": "options", "options": ["Mostly alone", "Mostly with others", "A mix of both"]}}
-]
-
-Return ONLY the JSON array. Do not include any other text.
-"""
-
-
-def analysis_prompt(region, age, gender, answers):
-    formatted_answers = "\n".join(
-        [f"{k}: {v}" for k, v in answers.items()]
-    )
-
-    return f"""
-You are an expert child psychologist and parenting coach.
-
-Child Details:
+====================
+CHILD CONTEXT
+====================
 Region: {region}
 Age: {age}
 Gender: {gender}
 
-Parent Answers:
-{formatted_answers}
+====================
+CULTURAL FRAMEWORK
+====================
+Use cultural sensitivity when asking questions:
 
-Generate a detailed response with TWO SECTIONS:
+- India / Asia:
+  • respect for elders & grandparents
+  • family hierarchy and obedience
+  • religion, rituals, horoscope, birth date/time beliefs
+  • discipline through guidance and authority
+  • emotional expression may be restrained
 
-1️⃣ Know About Your Child
-- psychology
-- behavior
-- emotional development
-- health & routine
-- social skills
+- USA / Europe:
+  • independence and self-expression
+  • emotional openness
+  • communication-focused parenting
+  • encouragement over authority
+  • behavior and social confidence matter most
 
-2️⃣ Parenting Tips
-- how parents can support the child
-- communication style
-- discipline guidance
+Adapt questions naturally based on the region.
+Do NOT stereotype — observe gently through questions.
+
+====================
+INTERVIEW HISTORY
+====================
+Previously asked questions and answers:
+{history}
+
+====================
+YOUR TASK
+====================
+Ask ONLY ONE next diagnostic question that:
+- builds directly on previous answers
+- reveals deeper insight (behavior, emotion, parenting belief)
+- avoids repetition or generic wording
+- feels natural and human (not academic)
+
+Question style rules:
+- Prefer YES/NO or MCQ when possible
+- Use TEXT only if emotional depth is required
+- Avoid long or tiring questions
+- Assume the parent is busy and slightly lazy
+
+====================
+IMPORTANT RULES
+====================
+❌ Do NOT repeat topics already covered  
+❌ Do NOT ask multiple questions at once  
+❌ Do NOT explain the question to the user  
+
+====================
+OUTPUT FORMAT (STRICT)
+====================
+Return ONLY valid JSON. No markdown. No commentary.
+
+{
+  "question": "string",
+  "type": "yesno" | "mcq" | "text",
+  "options": ["option1", "option2"] (only if type is mcq),
+  "reason": "Internal reasoning for why this question is important (not shown to user)"
+}
+"""
+
+def analysis_prompt(region, age, gender, history):
+    return f"""
+You are an experienced child psychologist and parenting coach.
+
+====================
+CHILD PROFILE
+====================
+Region: {region}
+Age: {age}
+Gender: {gender}
+
+====================
+INTERVIEW DATA
+====================
+Below is a structured interview conducted with the parent.
+Each question was asked adaptively based on previous responses.
+
+{history}
+
+====================
+YOUR TASK
+====================
+Generate TWO clear sections:
+
+1️⃣ KNOW ABOUT YOUR CHILD
+- emotional tendencies
+- behavioral patterns
+- social comfort & confidence
+- discipline response style
+- cultural & family influence
+
+2️⃣ PARENTING GUIDANCE
+- how parents can better support the child
+- communication tips
+- discipline & boundaries
 - emotional bonding
-- region-aware advice
+- culturally appropriate advice
 
-Tone: supportive, clear, professional.
+====================
+TONE & STYLE
+====================
+- Warm and reassuring
+- Practical (no theory-heavy language)
+- Non-judgmental
+- Actionable suggestions
+
+Do NOT mention AI, prompts, or interview mechanics.
+Speak directly to the parent.
 """

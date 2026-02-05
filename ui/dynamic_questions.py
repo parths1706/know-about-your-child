@@ -1,81 +1,51 @@
 import streamlit as st
-import json
-from ai.prompts import question_prompt
+from ai.prompts import next_question_prompt
 from ai.llm_client import ask_llm
 
-
 def render_dynamic_questions():
-    questions = st.session_state.questions
-    index = st.session_state.question_index
-    
-    if not questions:
-        st.session_state.screen = "transition"
-        st.rerun()
-        return
+    info = st.session_state.basic_info
 
-    total = len(questions)
+    if "questions_history" not in st.session_state:
+        st.session_state.questions_history = []
 
-    if index >= total:
-        st.session_state.screen = "result"
-        st.rerun()
-        return
+    # Ask AI for next question
+    prompt = next_question_prompt(
+        info["region"],
+        info["age"],
+        info["gender"],
+        st.session_state.questions_history
+    )
 
-    q = questions[index]
+    with st.spinner("Thinking about the next question..."):
+        q = ask_llm(prompt)
 
-    with st.container():
-        # Progress
-        st.markdown(
-            f"<div class='progress-text'>Question {index + 1} of {total}</div>",
-            unsafe_allow_html=True
-        )
-        st.progress((index + 1) / total)
+    st.markdown(
+        f"<div class='progress'>Question {len(st.session_state.questions_history)+1}</div>",
+        unsafe_allow_html=True
+    )
 
-        # Question
-        st.markdown(
-            f"<div class='question'>{q['question']}</div>",
-            unsafe_allow_html=True
-        )
+    st.markdown(f"<div class='question'>{q['question']}</div>", unsafe_allow_html=True)
 
-        key = f"q_{index}"
+    answer = None
 
-        # ---------- INPUT TYPES ----------
-        if q["type"] == "yes_no":
-            answer = st.radio(
-                "hidden_label",
-                ["Yes", "No"],
-                key=key,
-                horizontal=True,
-                label_visibility="collapsed"
-            )
+    if q["type"] == "yesno":
+        answer = st.radio("", ["Yes", "No"], horizontal=True)
 
-        elif q["type"] == "options":
-            answer = st.radio(
-                "hidden_label",
-                q["options"],
-                key=key,
-                label_visibility="collapsed"
-            )
+    elif q["type"] == "mcq":
+        answer = st.radio("", q["options"])
 
-        elif q["type"] == "scale":
-            answer = st.slider(
-                "",
-                1, 5, 3,
-                help="1 = Very Low, 5 = Very High",
-                key=key
-            )
+    else:
+        answer = st.text_area("", placeholder="Type briefly...")
 
+    if st.button("Next →", type="primary"):
+        st.session_state.questions_history.append({
+            "question": q["question"],
+            "type": q["type"],
+            "answer": answer
+        })
+
+        # Stop after enough info
+        if len(st.session_state.questions_history) >= 6:
+            st.session_state.screen = "result"
         else:
-            answer = st.text_area(
-                "",
-                placeholder="Type your answer…",
-                key=key,
-                height=120
-            )
-
-        st.session_state.answers[q["question"]] = answer
-
-        # ---------- NAV ----------
-        if st.button("Next →", type="primary"):
-            st.session_state.question_index += 1
-            st.session_state.screen = "transition"
             st.rerun()
