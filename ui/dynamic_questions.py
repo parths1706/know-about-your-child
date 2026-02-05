@@ -2,10 +2,12 @@ import streamlit as st
 import json
 from ai.prompts import next_question_prompt
 from ai.llm_client import ask_llm
+from ui.style import load_css
 
 MIN_QUESTIONS = 7
 
 def render_dynamic_questions():
+    load_css()
     info = st.session_state.basic_info
 
     # ---------- INIT ----------
@@ -36,7 +38,8 @@ def render_dynamic_questions():
                 history_text
             )
 
-            response = ask_llm(prompt)
+            response = ask_llm(prompt, expect_json=True)
+
 
             if response == "__RATE_LIMIT__":
                 st.warning("Daily AI limit reached. Please try later.")

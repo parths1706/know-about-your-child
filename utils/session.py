@@ -28,5 +28,6 @@ def init_session():
             st.session_state[k] = v
 
 def reset_flow():
-    st.session_state.questions_history = []
+    st.session_state.questions = []
     st.session_state.result = None
+
