@@ -1,57 +1,50 @@
 import streamlit as st
 from ai.prompts import analysis_prompt
 from ai.llm_client import ask_llm
-from utils.session import reset_flow
 
 def render_result():
     info = st.session_state.basic_info
 
-    # Format history for analysis
+    # ---------- FORMAT HISTORY ----------
     history_text = "\n".join([
-        f"Q: {item['question']}\nA: {item['answer']}\n"
+        f"Q: {item['question']}\nA: {item['answer']}"
         for item in st.session_state.questions_history
     ])
 
+    # ---------- GENERATE RESULT ONCE ----------
     if "result" not in st.session_state:
-        with st.spinner("📚 Analyzing your child..."):
-            response = ask_llm(
-                analysis_prompt(
-                    info["region"],
-                    info["age"],
-                    info["gender"],
-                    history_text
-                )
+        with st.spinner("🔍 Generating personalized insights..."):
+            prompt = analysis_prompt(
+                info["region"],
+                info["age"],
+                info["gender"],
+                history_text
             )
+
+            response = ask_llm(prompt)
+
+            if response == "__RATE_LIMIT__":
+                st.warning("⚠️ Daily AI limit reached. Please try again tomorrow.")
+                st.stop()
+
             st.session_state.result = response
 
-    with st.container():
-        # Check if result exists and has content
-        if not st.session_state.result:
-            st.error("No analysis result available. Please try again.")
-            if st.button("Go Back", type="primary"):
-                reset_flow()
-                st.session_state.screen = "intro"
-                st.rerun()
-            return
-            
-        # Check if result has sections
-        if "1️⃣" in st.session_state.result:
-            result_parts = st.session_state.result.split("2️⃣")
-            
-            # Section 1: Insights
-            st.markdown('<div class="card-header"><h3>🌱 Child Insights</h3></div>', unsafe_allow_html=True)
-            st.write(result_parts[0].replace("1️⃣", "").strip())
-            
-            # Section 2: Tips
-            if len(result_parts) > 1:
-                st.markdown('<div class="card-header"><h3>💜 Parenting Tips</h3></div>', unsafe_allow_html=True)
-                st.write(result_parts[1].strip())
-        else:
-            # Fallback if no sections
-            st.markdown('<div class="card-header"><h3>🌱 Child Insights</h3></div>', unsafe_allow_html=True)
-            st.write(st.session_state.result)
-        
-        if st.button("Start Over", type="primary"):
-            reset_flow()
-            st.session_state.screen = "intro"
-            st.rerun()
+    # ---------- UI ----------
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown(st.session_state.result, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    if st.button("🔁 Start Over"):
+        for key in [
+            "questions_history",
+            "asked_domains",
+            "current_question",
+            "result"
+        ]:
+            if key in st.session_state:
+                del st.session_state[key]
+
+        st.session_state.screen = "basic"
+        st.rerun()
