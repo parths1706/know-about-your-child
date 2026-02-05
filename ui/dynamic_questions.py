@@ -119,4 +119,5 @@ def render_dynamic_questions():
             })
 
             st.session_state.asked_domains.add(q["domain"])
+            
             st.rerun()
