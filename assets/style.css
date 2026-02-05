@@ -68,12 +68,13 @@ div[data-testid="stHeader"] {
 
 /* The main content container should be the ONLY card */
 div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stVerticalBlock"]) {
-    background: rgba(255, 255, 255, 0.95) !important;
+    background: #ffffff !important; /* Force solid white instead of rgba for dark mode stability */
     backdrop-filter: blur(10px);
     border-radius: 40px !important;
     padding: clamp(1.5rem, 5vw, 4rem) !important;
     box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.3) !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #1f2937 !important; /* Force dark text color on the whole card */
 }
 
 /* Kill all fragmented white blocks */
@@ -155,13 +156,13 @@ div.stButton > button[kind="primary"]:hover {
 
 /* Radio chips (Modern pill style) */
 .stRadio label {
-    background: #f3f4f6;
+    background: #f3f4f6 !important; /* Force light background */
     padding: 1.2rem 1.8rem !important;
     border-radius: 20px !important;
     font-weight: 600 !important;
     border: 2px solid transparent !important;
     transition: all 0.3s ease !important;
-    color: #4b5563 !important;
+    color: #4b5563 !important; /* Force dark text */
     font-size: 1.1rem !important;
 }
 
@@ -172,12 +173,13 @@ div.stButton > button[kind="primary"]:hover {
 
 .stRadio div[data-testid="stMarkdownContainer"] p {
     font-weight: 600 !important;
+    color: inherit !important; /* Ensure text color is inherited from forced label color */
 }
 
 /* Active state for radio (Targeting Streamlit's internal selection) */
 div[data-testid="stRadio"] label[data-selected="true"] {
     background: #7c3aed !important;
-    color: white !important;
+    color: #ffffff !important; /* Force white text for selected state */
     border-color: #6d28d9 !important;
     box-shadow: 0 10px 20px -5px rgba(124, 58, 237, 0.3) !important;
 }
