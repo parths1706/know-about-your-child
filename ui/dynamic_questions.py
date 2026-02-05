@@ -17,30 +17,36 @@ def render_dynamic_questions():
 
     with st.container():
         # Ask AI for next question
-        with st.spinner("🧠 Thinking about the next question..."):
-            prompt = next_question_prompt(
-                info["region"],
-                info["age"],
-                info["gender"],
-                history_text
-            )
-            
-            response = ask_llm(prompt)
-            
-            # Clean response if it contains markdown code blocks
-            if "```json" in response:
-                response = response.split("```json")[1].split("```")[0].strip()
-            elif "```" in response:
-                response = response.split("```")[1].split("```")[0].strip()
-            
-            try:
+        try:
+            with st.spinner("🧠 Thinking about the next question..."):
+                prompt = next_question_prompt(
+                    info["region"],
+                    info["age"],
+                    info["gender"],
+                    history_text
+                )
+                
+                response = ask_llm(prompt)
+                
+                # Clean response if it contains markdown code blocks
+                if "```json" in response:
+                    response = response.split("```json")[1].split("```")[0].strip()
+                elif "```" in response:
+                    response = response.split("```")[1].split("```")[0].strip()
+                
                 q = json.loads(response)
-            except:
-                st.error("Failed to generate question. Please try again.")
-                if st.button("Go Back"):
-                    st.session_state.screen = "basic"
-                    st.rerun()
-                return
+                
+                # Validate required fields
+                if "question" not in q or "type" not in q:
+                    raise ValueError("Missing required fields in response")
+                    
+        except Exception as e:
+            st.error("Failed to generate question. Please try again.")
+            st.caption(f"Debug: {str(e)[:200]}")
+            if st.button("Go Back"):
+                st.session_state.screen = "basic"
+                st.rerun()
+            return
 
         # Progress
         st.markdown(

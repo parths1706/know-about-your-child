@@ -14,7 +14,7 @@ def render_result():
 
     if "result" not in st.session_state:
         with st.spinner("📚 Analyzing your child..."):
-            st.session_state.result = ask_llm(
+            response = ask_llm(
                 analysis_prompt(
                     info["region"],
                     info["age"],
@@ -22,6 +22,7 @@ def render_result():
                     history_text
                 )
             )
+            st.session_state.result = response
 
     with st.container():
         # Check if result has sections
