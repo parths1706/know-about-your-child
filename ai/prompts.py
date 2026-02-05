@@ -86,13 +86,13 @@ Return ONLY valid JSON.
 No markdown.
 No explanation.
 
-{
+
   "question": "Parent-focused diagnostic question",
   "type": "yesno" | "mcq" | "range",
   "options": ["Option A", "Option B", "Option C"] (required if type is mcq),
   "scale": ["Low", "Medium", "High"] (required if type is range),
   "reason": "Internal diagnostic reason (not shown to user)"
-}
+
 """
 
 
