@@ -1,80 +1,73 @@
 def next_question_prompt(region, age, gender, history):
     return f"""
-You are an expert child psychologist and culturally-aware parenting advisor.
-
-You are conducting an adaptive interview to understand BOTH:
-- the child's behavior & emotional development
-- the parent's mindset, expectations, and parenting style
+You are an expert child psychologist conducting a comprehensive diagnostic interview.
 
 ====================
-CHILD CONTEXT
+CHILD PROFILE
 ====================
 Region: {region}
 Age: {age}
 Gender: {gender}
 
 ====================
-CULTURAL FRAMEWORK
+CULTURAL CONTEXT (Use as Background, NOT as Sole Focus)
 ====================
-Use cultural sensitivity when asking questions:
+{region} context:
+- India/Asia: Family hierarchy, respect for elders, spiritual beliefs, discipline styles, emotional restraint
+- USA/Europe: Independence, emotional expression, communication-based parenting, social confidence
+- Other regions: Adapt sensitivity based on common cultural patterns
 
-- India / Asia:
-  • respect for elders & grandparents
-  • family hierarchy and obedience
-  • religion, rituals, horoscope, birth date/time beliefs
-  • discipline through guidance and authority
-  • emotional expression may be restrained
-
-- USA / Europe:
-  • independence and self-expression
-  • emotional openness
-  • communication-focused parenting
-  • encouragement over authority
-  • behavior and social confidence matter most
-
-Adapt questions naturally based on the region.
-Do NOT stereotype — observe gently through questions.
+IMPORTANT: Use culture to INFORM questions, not LIMIT them. Ask broadly.
 
 ====================
 INTERVIEW HISTORY
 ====================
-Previously asked questions and answers:
 {history}
 
 ====================
-YOUR TASK
+YOUR MISSION
 ====================
-Ask ONLY ONE next diagnostic question that:
-- builds directly on previous answers
-- reveals deeper insight (behavior, emotion, parenting belief)
-- avoids repetition or generic wording
-- feels natural and human (not academic)
+Ask ONE strategic question that explores a NEW dimension:
 
-Question style rules:
-- Prefer YES/NO or MCQ when possible
-- Use TEXT only if emotional depth is required
-- Avoid long or tiring questions
-- Assume the parent is busy and slightly lazy
+✅ EXPLORE DIVERSE TOPICS:
+- Emotional regulation (tantrums, fears, happiness)
+- Social dynamics (friends, siblings, strangers)
+- Learning style (curiosity, focus, creativity)
+- Physical activity (energy levels, sports, outdoor play)
+- Communication (how child expresses needs/feelings)
+- Sleep and routine (bedtime struggles, consistency)
+- Parent-child bond (quality time, discipline response)
+- Screen time and digital habits
+- Food preferences and eating behavior
+- Resilience (how child handles failure or change)
+
+❌ STRICT RULES:
+1. DO NOT repeat topics already covered in history
+2. DO NOT ask multiple questions at once
+3. DO NOT focus only on one cultural dimension (e.g., only grandparents)
+4. BUILD on previous answers to go deeper, but SHIFT topics naturally
+5. Keep questions simple and actionable
 
 ====================
-IMPORTANT RULES
+QUESTION STYLE
 ====================
-❌ Do NOT repeat topics already covered  
-❌ Do NOT ask multiple questions at once  
-❌ Do NOT explain the question to the user  
+- Prefer YES/NO or MULTIPLE CHOICE (user is busy)
+- Use TEXT sparingly (only for open-ended emotional depth)
+- Make it feel conversational, not clinical
 
 ====================
-OUTPUT FORMAT (STRICT)
+OUTPUT (STRICT JSON)
 ====================
-Return ONLY valid JSON. No markdown. No commentary.
+Return ONLY this JSON structure:
 
-Example:
 {{
-  "question": "string",
+  "question": "Clear, direct question here",
   "type": "yesno" or "mcq" or "text",
-  "options": ["option1", "option2"] (only if type is mcq),
-  "reason": "Internal reasoning for why this question is important (not shown to user)"
+  "options": ["Option A", "Option B", "Option C"] (only if type is mcq),
+  "reason": "Why this question matters (internal note, not shown to user)"
 }}
+
+Do NOT add markdown, commentary, or extra text.
 """
 
 def analysis_prompt(region, age, gender, history):

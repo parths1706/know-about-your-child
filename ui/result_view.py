@@ -25,6 +25,15 @@ def render_result():
             st.session_state.result = response
 
     with st.container():
+        # Check if result exists and has content
+        if not st.session_state.result:
+            st.error("No analysis result available. Please try again.")
+            if st.button("Go Back", type="primary"):
+                reset_flow()
+                st.session_state.screen = "intro"
+                st.rerun()
+            return
+            
         # Check if result has sections
         if "1️⃣" in st.session_state.result:
             result_parts = st.session_state.result.split("2️⃣")
