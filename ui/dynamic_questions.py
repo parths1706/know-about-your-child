@@ -1,100 +1,126 @@
 import streamlit as st
 import json
-from ai.prompts import next_question_prompt
 from ai.llm_client import ask_llm
+from ai.prompts import next_question_prompt
+
+MIN_QUESTIONS = 7
+
+ALL_DOMAINS = {
+    "belief_system",
+    "discipline_style",
+    "emotional_response",
+    "parent_child_bond",
+    "respect_elders",
+    "independence",
+    "adaptability"
+}
+
+def init_question_state():
+    if "asked_domains" not in st.session_state:
+        st.session_state.asked_domains = set()
+
+    if "qa_history" not in st.session_state:
+        st.session_state.qa_history = []
+
+    if "question_count" not in st.session_state:
+        st.session_state.question_count = 0
+
+    if "current_question" not in st.session_state:
+        st.session_state.current_question = None
+
 
 def render_dynamic_questions():
-    info = st.session_state.basic_info
+    init_question_state()
 
-    if "questions_history" not in st.session_state:
-        st.session_state.questions_history = []
+    # If no active question, generate one
+    if st.session_state.current_question is None:
+        generate_next_question()
 
-    # Format history for prompt
-    history_text = "\n".join([
-        f"Q: {item['question']}\nA: {item['answer']}\n"
-        for item in st.session_state.questions_history
-    ]) if st.session_state.questions_history else "No previous questions yet."
+    q = st.session_state.current_question
 
-    with st.container():
-        # Ask AI for next question
-        try:
-            with st.spinner("🧠 Thinking about the next question..."):
-                prompt = next_question_prompt(
-                    info["region"],
-                    info["age"],
-                    info["gender"],
-                    history_text
-                )
-                
-                response = ask_llm(prompt)
-                
-                # Clean response if it contains markdown code blocks
-                if "```json" in response:
-                    response = response.split("```json")[1].split("```")[0].strip()
-                elif "```" in response:
-                    response = response.split("```")[1].split("```")[0].strip()
-                
-                q = json.loads(response)
-                
-                # Validate required fields
-                if "question" not in q or "type" not in q:
-                    raise ValueError("Missing required fields in response")
-                    
-        except Exception as e:
-            st.error("Failed to generate question. Please try again.")
-            st.caption(f"Debug: {str(e)[:200]}")
-            if st.button("Go Back"):
-                st.session_state.screen = "basic"
-                st.rerun()
-            return
+    st.markdown(f"### Question {st.session_state.question_count + 1}")
 
-        # Progress
-        st.markdown(
-            f"<div class='progress-text'>Step {len(st.session_state.questions_history)+1} of 6</div>",
-            unsafe_allow_html=True
+    st.markdown(q["question"])
+
+    answer = None
+
+    if q["type"] == "yesno":
+        answer = st.radio(
+            "Select one:",
+            ["Yes", "No"],
+            horizontal=True,
+            key=f"ans_{st.session_state.question_count}"
         )
-        st.progress((len(st.session_state.questions_history)+1) / 6)
 
-        # Question
-        st.markdown(f"<div class='question'>{q['question']}</div>", unsafe_allow_html=True)
+    elif q["type"] == "mcq":
+        answer = st.radio(
+            "Select one:",
+            q["options"],
+            key=f"ans_{st.session_state.question_count}"
+        )
 
-        answer = None
+    elif q["type"] == "range":
+        answer = st.slider(
+            "Select:",
+            0,
+            len(q["scale"]) - 1,
+            format="",
+            key=f"ans_{st.session_state.question_count}"
+        )
+        answer = q["scale"][answer]
 
-        if q["type"] == "yesno":
-            answer = st.radio(
-                "hidden_label",
-                ["Yes", "No"],
-                horizontal=True,
-                label_visibility="collapsed",
-                key=f"q_{len(st.session_state.questions_history)}"
-            )
+    if st.button("Next →", type="primary"):
+        save_answer(answer)
 
-        elif q["type"] == "mcq":
-            answer = st.radio(
-                "hidden_label",
-                q["options"],
-                label_visibility="collapsed",
-                key=f"q_{len(st.session_state.questions_history)}"
-            )
 
-        else:
-            answer = st.text_area(
-                "hidden_label",
-                placeholder="Type briefly…",
-                label_visibility="collapsed",
-                height=120,
-                key=f"q_{len(st.session_state.questions_history)}"
-            )
+def save_answer(answer):
+    q = st.session_state.current_question
 
-        if st.button("Next →", type="primary"):
-            st.session_state.questions_history.append({
-                "question": q["question"],
-                "type": q["type"],
-                "answer": answer
-            })
+    st.session_state.qa_history.append({
+        "domain": q["domain"],
+        "question": q["question"],
+        "answer": answer
+    })
 
-            # Stop after enough info
-            if len(st.session_state.questions_history) >= 6:
-                st.session_state.screen = "result"
-            
+    st.session_state.asked_domains.add(q["domain"])
+    st.session_state.question_count += 1
+    st.session_state.current_question = None
+
+    # Enforce minimum questions
+    if st.session_state.question_count >= MIN_QUESTIONS:
+        if len(st.session_state.asked_domains) >= len(ALL_DOMAINS):
+            st.session_state.screen = "result"
             st.rerun()
+
+    st.rerun()
+
+
+def generate_next_question():
+    region = st.session_state.basic_info["region"]
+    age = st.session_state.basic_info["age"]
+    gender = st.session_state.basic_info["gender"]
+
+    used = st.session_state.asked_domains
+    remaining_domains = list(ALL_DOMAINS - used)
+
+    history_text = ""
+    for h in st.session_state.qa_history:
+        history_text += f"{h['question']} → {h['answer']}\n"
+
+    prompt = next_question_prompt(region, age, gender, history_text)
+
+    raw = ask_llm(prompt)
+
+    try:
+        data = json.loads(raw)
+    except Exception:
+        return  # silently fail and regenerate next run
+
+    # HARD GUARDS
+    if data.get("domain") in used:
+        return
+
+    if data.get("type") not in ["yesno", "mcq", "range"]:
+        return
+
+    st.session_state.current_question = data
