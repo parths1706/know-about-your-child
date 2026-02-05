@@ -99,12 +99,12 @@ OUTPUT FORMAT (STRICT)
 Return ONLY valid JSON.
 No explanations. No markdown.
 
-{
+
   "question": "Parent-focused diagnostic question",
   "type": "yesno" | "mcq" | "text",
   "options": ["Option 1", "Option 2", "Option 3"] (only if type is mcq),
   "reason": "Internal reasoning for diagnostic value (not shown to user)"
-}
+
 """
 
 
