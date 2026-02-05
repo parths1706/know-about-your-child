@@ -38,16 +38,17 @@ def render_result():
             st.session_state.result = response
 
     # ---------- UI (LET CSS HANDLE CARD) ----------
-    st.markdown(
-        "<div class='section-title'>Know About Your Child</div>",
-        unsafe_allow_html=True
-    )
+    with st.container():
+        st.markdown(
+            "<div class='section-title'>Know About Your Child</div>",
+            unsafe_allow_html=True
+        )
 
-    st.markdown(st.session_state.result, unsafe_allow_html=True)
+        st.markdown(st.session_state.result, unsafe_allow_html=True)
 
-    st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown("<br><br>", unsafe_allow_html=True)
 
-    if st.button("🔁 Start Over", type="primary"):
-        reset_flow()
-        st.session_state.screen = "basic"
-        st.rerun()
+        if st.button("🔁 Start Over", type="primary"):
+            reset_flow()
+            st.session_state.screen = "basic"
+            st.rerun()

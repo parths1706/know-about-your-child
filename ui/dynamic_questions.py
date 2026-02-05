@@ -11,21 +11,21 @@ def render_dynamic_questions():
     info = st.session_state.basic_info
 
     # ---------- INIT ----------
-    if "questions_history" not in st.session_state:
-        st.session_state.questions_history = []
+    if "questions" not in st.session_state:
+        st.session_state.questions = []
 
     if "current_question" not in st.session_state:
         st.session_state.current_question = None
 
     # ---------- STOP ----------
-    if len(st.session_state.questions_history) >= MIN_QUESTIONS:
+    if len(st.session_state.questions) >= MIN_QUESTIONS:
         st.session_state.screen = "result"
         st.rerun()
 
     # ---------- HISTORY ----------
     history_text = "\n".join(
         [f"Q: {q['question']}\nA: {q['answer']}"
-         for q in st.session_state.questions_history]
+         for q in st.session_state.questions]
     ) or "No previous questions yet."
 
     # ---------- GENERATE QUESTION (ONCE) ----------
@@ -52,59 +52,58 @@ def render_dynamic_questions():
                 st.stop()
 
     q = st.session_state.current_question
-    step = len(st.session_state.questions_history) + 1
+    step = len(st.session_state.questions) + 1
 
     # ---------- UI ----------
-    st.markdown(
-        f"<div class='progress-text'>Question {step} of {MIN_QUESTIONS}</div>",
-        unsafe_allow_html=True
-    )
-    st.progress(step / MIN_QUESTIONS)
-
-    st.markdown("<div class='card'>", unsafe_allow_html=True)
-    st.markdown(
-        f"<div class='question'>{q['question']}</div>",
-        unsafe_allow_html=True
-    )
-
-    answer = None
-
-    # ---------- TAP-ONLY ANSWERS ----------
-    if q["type"] == "yesno":
-        answer = st.radio(
-            "",
-            ["Yes", "No", "Sometimes"],
-            horizontal=True,
-            label_visibility="collapsed",
-            key=f"ans_{step}"
+    with st.container():
+        st.markdown(
+            f"<div class='progress-text'>Question {step} of {MIN_QUESTIONS}</div>",
+            unsafe_allow_html=True
         )
-
-    elif q["type"] == "mcq":
-        answer = st.radio(
-            "",
-            q["options"],
-            label_visibility="collapsed",
-            key=f"ans_{step}"
+        st.progress(step / MIN_QUESTIONS)
+    
+        st.markdown(
+            f"<div class='question'>{q['question']}</div>",
+            unsafe_allow_html=True
         )
-
-    elif q["type"] == "range":
-        scale = q.get("scale", ["Low", "Medium", "High"])
-        idx = st.slider(
-            "",
-            0,
-            len(scale) - 1,
-            label_visibility="collapsed",
-            key=f"ans_{step}"
-        )
-        answer = scale[idx]
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # ---------- NEXT ----------
-    if st.button("Next →", type="primary"):
-        st.session_state.questions_history.append({
-            "question": q["question"],
-            "answer": answer
-        })
-        st.session_state.current_question = None
-        st.rerun()
+    
+        answer = None
+    
+        # ---------- TAP-ONLY ANSWERS ----------
+        if q["type"] == "yesno":
+            answer = st.radio(
+                "",
+                ["Yes", "No", "Sometimes"],
+                horizontal=True,
+                label_visibility="collapsed",
+                key=f"ans_{step}"
+            )
+    
+        elif q["type"] == "mcq":
+            answer = st.radio(
+                "",
+                q["options"],
+                label_visibility="collapsed",
+                key=f"ans_{step}"
+            )
+    
+        elif q["type"] == "range":
+            scale = q.get("scale", ["Low", "Medium", "High"])
+            idx = st.slider(
+                "",
+                0,
+                len(scale) - 1,
+                label_visibility="collapsed",
+                key=f"ans_{step}"
+            )
+            answer = scale[idx]
+    
+        # ---------- NEXT ----------
+        if st.button("Next →", type="primary"):
+            st.session_state.questions.append({
+                "question": q["question"],
+                "answer": answer
+            })
+            st.session_state.current_question = None
+            st.rerun()
+    
